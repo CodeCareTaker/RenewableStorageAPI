@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 const User = require("./user");
-const Blog = require("./blog");
+const Comment = require("./comment");
 
 //SCHEMA SETUP
 const blogSchema = new mongoose.Schema(
@@ -8,12 +8,11 @@ const blogSchema = new mongoose.Schema(
     title: { type: String, required: true, maxLength: 60 },
     blogImage: { type: String, required: true },
     content: { type: String, required: true, maxLength: 10000 },
-    user: [
+    user: 
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "User"
-      }
-    ],
+      },
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
@@ -22,7 +21,7 @@ const blogSchema = new mongoose.Schema(
     ]
   },
   {
-    timestamps: true;
+    timestamps: true
   }
 );
 
@@ -31,7 +30,7 @@ blogSchema.pre('remove', async function(next) {
       //find a user
       let user = await.User.findById(this.userId)
       //remove the blog id from their list of blog entries
-      user.blog.remove(this.id);
+      user.blogs.remove(this.id);
       //save that user
       await user.save();
       //return next

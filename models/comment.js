@@ -1,20 +1,19 @@
-var mongoose = require("mongoose");
+const mongoose = require("mongoose");
 const User = require("./user");
 const Blog = require("./blog");
 
-const commentSchema = mongoose.Schema({
+const commentSchema = mongoose.Schema(
+  {
     text: { type: String, required: true, maxLength: 300 },
-    user: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "User"
-      }
-    ],
-    created: {
-        type: Date, 
-        default: Date.now
+    user: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User"
     }
-});
+  },
+  {
+	timestamps: true
+  }
+);
 
 commentSchema.pre('remove', async function(next) {
   try {

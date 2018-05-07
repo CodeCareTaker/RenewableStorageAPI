@@ -21,7 +21,7 @@ app.use("/api/blogs/:id/comments", commentRoutes);
 
 app.get("/api/blogs", async function(req, res, next) {
   try {
-  	let blogs = await db.Blogs.find()
+  	let blogs = await db.Blog.find()
   	.sort({ createdAt: -1 })
   	.populate("comment");
   	return res.status(200).json(blogs);
