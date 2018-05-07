@@ -1,18 +1,45 @@
-var mongoose              = require("mongoose");
-var passportLocalMongoose = require("passport-local-mongoose");
-mongoose.connect("mongodb://localhost/renewablestorage");
-mongoose.set("debug", true);
-mongoose.Promise = Promise;
+const mongoose = require("express");
+const bcrypt = require("bcrypt");
 
-var UserSchema = new mongoose.Schema({
-    username: String,
-    password: String,
-    isAdmin: {
-        type: Boolean,
-        default: false
-    }
+const userSchema = new mongoose.Schema({
+	email: { type: String, required: true, unique: true },
+    username: { type: String, required: true, unique: true },
+    password:  { type: String, required: true },
+    blogs: [
+      {
+      	type: mongoose.Schema.Types.ObjectId,
+      	ref: "Blog"
+      }
+    ],
+    comments: [
+      {
+      	type: mongoose.Schema.Types.ObjectId,
+      	ref: "Comment"
+      }
+    ]
 });
 
-UserSchema.plugin(passportLocalMongoose);
+userSchema.pre("save", async function(next) {
+  try {
+    if(!this.isModified("password")) {
+      return next();
+    }
+    let hashedPassword = bcrypt.hash(this.password, 10);
+    this.password = hashedPassword;
+  } catch (err) {
+  	return next(err);
+  }
+})
 
-module.exports = mongoose.model("User", UserSchema);
+userSchema.methods.comparePassword = async function(candidatePassword, next) {
+  try {
+  	let isMatch = await bcrypt.compare(candidatePassword, this.password);
+  	return isMatch;
+  } catch (err) {
+  	return next(err);
+  }
+}
+
+const User = mongoose.model("User", userSchema)
+
+module.exports = User;

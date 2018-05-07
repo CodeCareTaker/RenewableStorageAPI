@@ -1,30 +1,47 @@
-var mongoose = require("mongoose");
-mongoose.connect("mongodb://localhost/renewablestorage");
-mongoose.set("debug", true);
-mongoose.Promise = Promise;
+const mongoose = require("mongoose");
+const User = require("./user");
+const Blog = require("./blog");
 
 //SCHEMA SETUP
-var blogSchema = new mongoose.Schema({
-    title: String,
-    image: String,
-    content: String,
-    created: { 
-        type: Date, 
-        default: Date.now
-    },
-    author: {
-             id: {
-                 type: mongoose.Schema.Types.ObjectId,
-                 ref: "User"
-             },
-             username: String
-    },
+const blogSchema = new mongoose.Schema(
+  {
+    title: { type: String, required: true, maxLength: 60 },
+    blogImage: { type: String, required: true },
+    content: { type: String, required: true, maxLength: 10000 },
+    user: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User"
+      }
+    ],
     comments: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: "Comment"
         }
     ]
-});
+  },
+  {
+    timestamps: true;
+  }
+);
 
-module.exports = mongoose.model("Blog", blogSchema);
+blogSchema.pre('remove', async function(next) {
+    try{
+      //find a user
+      let user = await.User.findById(this.userId)
+      //remove the blog id from their list of blog entries
+      user.blog.remove(this.id);
+      //save that user
+      await user.save();
+      //return next
+      return next();
+    } catch (err) {
+      return next(err);
+    }
+
+})
+
+const Blog = mongoose.model("Blog", blogSchema);
+
+module.exports = Blog;
