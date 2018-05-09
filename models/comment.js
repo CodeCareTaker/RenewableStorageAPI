@@ -28,7 +28,7 @@ commentSchema.pre('remove', async function(next) {
   } catch (err) {
     return next(err);
   }
-})
+});
 
 const Comment = mongoose.model("Comment", commentSchema);
 

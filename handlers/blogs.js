@@ -27,7 +27,7 @@ exports.getBlog = async function(req, res, next) {
   } catch (err) {
   	return next(err);
   }
-}
+};
 
 exports.updateBlog = async function(req, res, next) {
   try {

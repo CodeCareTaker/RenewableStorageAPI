@@ -39,7 +39,7 @@ blogSchema.pre('remove', async function(next) {
       return next(err);
     }
 
-})
+});
 
 const Blog = mongoose.model("Blog", blogSchema);
 

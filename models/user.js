@@ -29,7 +29,7 @@ userSchema.pre("save", async function(next) {
   } catch (err) {
   	return next(err);
   }
-})
+});
 
 userSchema.methods.comparePassword = async function(candidatePassword, next) {
   try {
@@ -38,8 +38,8 @@ userSchema.methods.comparePassword = async function(candidatePassword, next) {
   } catch (err) {
   	return next(err);
   }
-}
+};
 
-const User = mongoose.model("User", userSchema)
+const User = mongoose.model("User", userSchema);
 
 module.exports = User;
